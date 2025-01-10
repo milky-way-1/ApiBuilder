@@ -13,4 +13,5 @@ public class FormSubmissionResponse {
     private String submittedBy;
     private Map<String, Object> responses;
     private Date submittedAt;
+    private Date updatedAt;
 }
