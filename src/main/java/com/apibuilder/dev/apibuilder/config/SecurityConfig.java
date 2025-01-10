@@ -20,39 +20,55 @@ import com.apibuilder.dev.apibuilder.service.CustomUserDetailsService;
 @Configuration
 public class SecurityConfig {
 
-	@Autowired
-	private CustomUserDetailsService userDetailsService;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
-	@Autowired
-	private JwtFilter jwtFilter;
+    @Autowired
+    private JwtFilter jwtFilter;
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.cors(cors -> cors.disable()).csrf(csrf -> csrf.disable())
-				.authorizeHttpRequests(request -> request.requestMatchers("/api/users/login", "/api/users/register")
-						.permitAll().anyRequest().authenticated())
-				.formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults())
-				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-		;
-		return http.build();
-	}
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.cors(cors -> cors.configurationSource(request -> {
+                    var config = new org.springframework.web.cors.CorsConfiguration();
+                    config.setAllowCredentials(true);
+                    config.addAllowedOrigin("http://localhost:4200");  // Frontend URL
+                    config.addAllowedMethod("GET");
+                    config.addAllowedMethod("POST");
+                    config.addAllowedMethod("PUT");
+                    config.addAllowedMethod("DELETE");
+                    config.addAllowedMethod("OPTIONS");  // Allow OPTIONS for preflight requests
+                    config.addAllowedHeader("Authorization");  // Allow the Authorization header
+                    config.addAllowedHeader("Content-Type");  // Allow the Content-Type header
+                    return config;
+                }))
+                .csrf(csrf -> csrf.disable())  // Disable CSRF for stateless JWT authentication
+                .authorizeHttpRequests(request -> request
+                    .requestMatchers("/api/users/login", "/api/users/register")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+                .formLogin(Customizer.withDefaults())
+                .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-	@Bean
-	public AuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-		authenticationProvider.setUserDetailsService(userDetailsService);
-		authenticationProvider.setPasswordEncoder(passwordEncoder());
-		return authenticationProvider;
-	}
+        return http.build();
+    }
 
-	@Bean
-	AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-		return config.getAuthenticationManager();
-	}
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 }
