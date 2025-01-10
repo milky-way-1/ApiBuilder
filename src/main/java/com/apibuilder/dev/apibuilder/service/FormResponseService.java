@@ -36,6 +36,7 @@ public class FormResponseService {
         response.setSubmittedBy(userId);
         response.setFieldResponses(request.getResponses());
         response.setSubmittedAt(new Date());
+        response.setUpdatedAt(new Date());
 
         FormResponse savedResponse = formResponseRepository.save(response);
         return formMapper.toFormSubmissionResponse(savedResponse);
@@ -77,6 +78,38 @@ public class FormResponseService {
         }
 
         return formMapper.toFormSubmissionResponse(response);
+    } 
+    
+    public FormSubmissionResponse updateResponse(String userId, String responseId, 
+            FormSubmissionRequest request) {
+        FormResponse response = formResponseRepository.findById(responseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Form response not found"));
+
+        if (!response.getSubmittedBy().equals(userId)) {
+            throw new UnauthorizedException("Not authorized to update this response");
+        }
+
+        FormTemplate template = formTemplateRepository.findById(response.getFormTemplateId())
+                .orElseThrow(() -> new ResourceNotFoundException("Form template not found"));
+
+        formValidator.validateResponses(template, request.getResponses());
+
+        response.setFieldResponses(request.getResponses());
+        response.setUpdatedAt(new Date());
+
+        FormResponse updatedResponse = formResponseRepository.save(response);
+        return formMapper.toFormSubmissionResponse(updatedResponse);
+    }
+
+    public void deleteResponse(String userId, String responseId) {
+        FormResponse response = formResponseRepository.findById(responseId)
+                .orElseThrow(() -> new ResourceNotFoundException("Form response not found"));
+
+        if (!response.getSubmittedBy().equals(userId)) {
+            throw new UnauthorizedException("Not authorized to delete this response");
+        }
+
+        formResponseRepository.delete(response);
     }
 
 }
