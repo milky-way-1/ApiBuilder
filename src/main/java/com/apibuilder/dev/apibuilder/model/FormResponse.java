@@ -31,5 +31,7 @@ public class FormResponse {
     private Map<String, Object> fieldResponses;
 
     @CreatedDate
-    private Date submittedAt;
+    private Date submittedAt; 
+    
+    private Date updatedAt;
 }
