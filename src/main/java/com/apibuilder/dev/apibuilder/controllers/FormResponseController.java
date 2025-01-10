@@ -79,6 +79,34 @@ public class FormResponseController {
         User user = userService.getUserByEmail(email);
         return ResponseEntity.ok(formResponseService.getResponse(user.getId(), responseId));
     }
+    
+    @PutMapping("/{responseId}")
+    public ResponseEntity<?> updateResponse(
+            @RequestHeader("Authorization") String token,
+            @PathVariable String responseId,
+            @Valid @RequestBody FormSubmissionRequest request) {
+        ResponseEntity<?> tokenValidation = validateTokenAndGetEmail(token);
+        if (tokenValidation.getStatusCode() != HttpStatus.OK) {
+            return tokenValidation;
+        }
+        String email = (String) tokenValidation.getBody();
+        User user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(formResponseService.updateResponse(user.getId(), responseId, request));
+    }
+
+    @DeleteMapping("/{responseId}")
+    public ResponseEntity<?> deleteResponse(
+            @RequestHeader("Authorization") String token,
+            @PathVariable String responseId) {
+        ResponseEntity<?> tokenValidation = validateTokenAndGetEmail(token);
+        if (tokenValidation.getStatusCode() != HttpStatus.OK) {
+            return tokenValidation;
+        }
+        String email = (String) tokenValidation.getBody();
+        User user = userService.getUserByEmail(email);
+        formResponseService.deleteResponse(user.getId(), responseId);
+        return ResponseEntity.ok().build();
+    }
 
     private ResponseEntity<?> validateTokenAndGetEmail(String token) {
         if (token == null || !token.startsWith("Bearer ")) {
