@@ -35,6 +35,10 @@ public class FormTemplate {
     
     @NotEmpty
     private List<FormField> fields;
+
+    private String get_submission_url; 
+    
+    private String post_submission_url;
     
     @CreatedDate
     private Date createdAt;
