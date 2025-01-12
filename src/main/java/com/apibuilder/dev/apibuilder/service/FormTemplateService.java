@@ -26,7 +26,7 @@ public class FormTemplateService {
     private final UserRepository userRepository;
     private final FormMapper formMapper;
 
-    public FormTemplateResponse createFormTemplate(String userId, FormTemplateRequest request) {
+     public FormTemplateResponse createFormTemplate(String userId, FormTemplateRequest request) {
         FormTemplate template = formMapper.toFormTemplateEntity(request);
 
         if (template.getFields() != null) {
@@ -41,6 +41,12 @@ public class FormTemplateService {
         template.setUpdatedAt(new Date());
 
         FormTemplate savedTemplate = formTemplateRepository.save(template);
+
+        savedTemplate.setGet_submission_url("https://apibuilder-m3v2.onrender.com/api/responses/form/" + savedTemplate.getId());
+        savedTemplate.setPost_submission_url("https://apibuilder-m3v2.onrender.com/api/responses/submit/" + savedTemplate.getId());
+
+        savedTemplate = formTemplateRepository.save(savedTemplate);
+        
         return formMapper.toFormTemplateResponse(savedTemplate);
     }
 
