@@ -42,8 +42,8 @@ public class FormTemplateService {
 
         FormTemplate savedTemplate = formTemplateRepository.save(template);
 
-        savedTemplate.setGet_submission_url("https://apibuilder-m3v2.onrender.com/api/responses/form/" + savedTemplate.getId());
-        savedTemplate.setPost_submission_url("https://apibuilder-m3v2.onrender.com/api/responses/submit/" + savedTemplate.getId());
+        savedTemplate.setGet_submission_url("http://localhost:4200/form?formId="+ savedTemplate.getId());
+        savedTemplate.setPost_submission_url("http://localhost:4200/submissions?formId=" + savedTemplate.getId());
 
         savedTemplate = formTemplateRepository.save(savedTemplate);
         
