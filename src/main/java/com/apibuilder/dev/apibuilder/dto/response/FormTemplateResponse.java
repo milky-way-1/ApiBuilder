@@ -13,6 +13,8 @@ public class FormTemplateResponse {
     private String createdBy;
     private String projectId;
     private List<FormFieldResponse> fields;
+    private String get_submission_url; 
+    private String post_submission_url;
     private Date createdAt;
     private Date updatedAt;
 }
