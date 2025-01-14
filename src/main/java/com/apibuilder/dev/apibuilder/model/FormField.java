@@ -1,6 +1,8 @@
 package com.apibuilder.dev.apibuilder.model;
 
 import com.apibuilder.dev.apibuilder.constant.FieldType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,7 +22,10 @@ public class FormField {
     @NotNull
     private FieldType type;
 
-    private boolean isUnique;
+    @JsonProperty("isUnique")
+    private boolean isUnique; 
+    
+    @JsonProperty("isMandatory")
     private boolean isMandatory;
     private String validations;
     private boolean longText;
