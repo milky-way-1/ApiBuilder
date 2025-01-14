@@ -95,7 +95,7 @@ public class FormTemplateController {
         String email = (String) tokenValidation.getBody();
         User user = userService.getUserByEmail(email);
         formTemplateService.deleteFormTemplate(user.getId(), formId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     private ResponseEntity<?> validateTokenAndGetEmail(String token) {
@@ -116,5 +116,20 @@ public class FormTemplateController {
         }
 
         return ResponseEntity.ok(email);
+    }
+    
+    @PostMapping("/{formId}/fields/{fieldId}/check-unique")
+    public ResponseEntity<?> checkFieldUniqueness(
+            @RequestHeader("Authorization") String token,
+            @PathVariable String formId,
+            @PathVariable String fieldId,
+            @RequestParam String value) {
+        ResponseEntity<?> tokenValidation = validateTokenAndGetEmail(token);
+        if (tokenValidation.getStatusCode() != HttpStatus.OK) {
+            return tokenValidation;
+        }
+
+        boolean isUnique = formTemplateService.checkFieldUniqueness(formId, fieldId, value);
+        return ResponseEntity.ok(isUnique);
     }
 }
