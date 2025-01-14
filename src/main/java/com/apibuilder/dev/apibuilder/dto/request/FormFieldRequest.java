@@ -1,6 +1,8 @@
 package com.apibuilder.dev.apibuilder.dto.request;
 
 import com.apibuilder.dev.apibuilder.constant.FieldType;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -16,8 +18,12 @@ public class FormFieldRequest {
     @NotNull(message = "Field type is required")
     private FieldType type;
 
-    private boolean isUnique;
-    private boolean isMandatory;
+    @JsonProperty("isUnique")
+    private boolean isUnique; 
+    
+    @JsonProperty("isMandatory")
+    private boolean isMandatory; 
+    
     private String validations;
     private boolean longText;
     private String placeholder;
