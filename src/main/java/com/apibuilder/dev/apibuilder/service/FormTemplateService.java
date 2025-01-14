@@ -6,7 +6,9 @@ import com.apibuilder.dev.apibuilder.dto.response.PageResponse;
 import com.apibuilder.dev.apibuilder.exception.ResourceNotFoundException;
 import com.apibuilder.dev.apibuilder.exception.UnauthorizedException;
 import com.apibuilder.dev.apibuilder.mapper.FormMapper;
+import com.apibuilder.dev.apibuilder.model.FormResponse;
 import com.apibuilder.dev.apibuilder.model.FormTemplate;
+import com.apibuilder.dev.apibuilder.repository.FormResponseRepository;
 import com.apibuilder.dev.apibuilder.repository.FormTemplateRepository;
 import com.apibuilder.dev.apibuilder.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +24,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 @RequiredArgsConstructor
 public class FormTemplateService {
-    private final FormTemplateRepository formTemplateRepository;
+    private final FormTemplateRepository formTemplateRepository; 
+    private final FormResponseRepository formResponseRepository;
     private final UserRepository userRepository;
     private final FormMapper formMapper;
 
-     public FormTemplateResponse createFormTemplate(String userId, FormTemplateRequest request) {
+    public FormTemplateResponse createFormTemplate(String userId, FormTemplateRequest request) {
         FormTemplate template = formMapper.toFormTemplateEntity(request);
 
         if (template.getFields() != null) {
@@ -99,6 +102,15 @@ public class FormTemplateService {
         validateUser(userId);
         List<FormTemplate> templates = formTemplateRepository.findByProjectId(projectId);
         return formMapper.toFormTemplateResponseList(templates);
+    } 
+    
+    public boolean checkFieldUniqueness(String formId, String fieldId, String value) {
+        List<FormResponse> responses = formResponseRepository.findByFormTemplateId(formId);
+        
+        return responses.stream()
+                .noneMatch(response -> 
+                    value.equals(response.getFieldResponses().get(fieldId))
+                );
     }
 
     private void validateUser(String userId) {
@@ -117,5 +129,6 @@ public class FormTemplateService {
                 timestamp,
                 machineId,
                 increment);
-    }
+    } 
+        
 }
