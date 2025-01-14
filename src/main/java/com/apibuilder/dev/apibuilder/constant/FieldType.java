@@ -7,5 +7,6 @@ public enum FieldType {
     LIST,
     URL,
     BOOLEAN,
-    FILE
+    FILE,
+    EMAIL
 }
