@@ -72,6 +72,8 @@ public class UserService {
 		User user=new User();
 		BeanUtils.copyProperties(userRequest, user);
 		user.setPassword(encoder.encode(userRequest.getPassword()));
+                user.setCreatedAt(new Date()); 
+		user.setUpdatedAt(new Date());
 		User userCreated=userRepository.save(user);
 		UserResponse userResponse=new UserResponse();
 		BeanUtils.copyProperties(userCreated, userResponse);
